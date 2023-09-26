@@ -1,0 +1,14 @@
+
+{% if size > 0 %}
+{% for p in authors  %}
+<li><img src={{p.picture}} alt="" heigth="50px"  width="50px"/> - {{p.username | upper}} - {{p.email}} - {{p.nb_books}} <a href={{(path( 'app_author2',{id : p.id}))}}>details</a></li>
+{% endfor %}
+{% else %}
+vide
+{%endif%}
+<p>les nombres des auteurs est {{size}}</p>
+{%set s=0%}
+{%for p in authors%}
+{%set s=s+p.nb_books%}
+{%endfor%}
+Les nombre des livres sont {{s}}

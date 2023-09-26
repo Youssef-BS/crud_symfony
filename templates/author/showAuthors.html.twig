@@ -1,0 +1,8 @@
+{{id}}
+{% for p in authors  %}
+{% if id == p.id%}
+{{p.username}}
+{{p.email}}
+<img src={{p.picture}} alt="" width="50px" heigth="50px"/>
+{%endif%}
+{%endfor%}

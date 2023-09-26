@@ -18,16 +18,15 @@ class ProjectController extends AbstractController
         ]);
     }
  
-    #[Route('/afficher/{name}/{description}',
-     name: 'app_afficher')]
+    #[Route('/afficher/{name}/{description}',name: 'app_afficher')]
     public function afficher($name , $description) : Response {
         $projects = [[
             'name' => 'MERN',
-            'description' => 'description 1'
+            'description' => 'description 1',
         ] , 
         [
             'name' => 'MEAN',
-            'description' => 'description 2'
+            'description' => 'description 2',
         ]
     ];
      return $this->render('project/afficher.html.twig',[
