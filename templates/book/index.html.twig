@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter Author</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td><h4>title</h4></td>
+        <td><h4>publicationTime</h4></td>
+        <td><h4>publishet</h4></td>
+        <td><h4>category</h4></td>
+    </tr>
+{% for a in books %}
+<tr>
+    <td>
+    {{ a.title }} 
+    </td>
+    <td>
+    {{ a.publicationDate | date('n/d/y')}} 
+    </td>
+    <td>
+    {{ a.Ispublished }} 
+    </td>
+    <td>
+    {{ a.category }} 
+    </td>
+    <td><a href="{{ path('book_remove', {ref: a.ref}) }}" class="supprimer">supprimer</a>
+</tr>
+{% endfor %}
+</table>

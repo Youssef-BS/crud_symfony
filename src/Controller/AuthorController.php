@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Form\AuthorType;
+
 
 class AuthorController extends AbstractController
 { 
@@ -86,7 +88,7 @@ class AuthorController extends AbstractController
         $em->persist($author);
         $em->flush();
 
-        return new Response("Author added successfully");
+        return $this->redirectToRoute('app_listDB');
     }
 
 
@@ -110,41 +112,27 @@ class AuthorController extends AbstractController
     }
 
 
-    #[Route('/updateOne/{id}', name: 'app_update')]
-    public function update(Request $request, AuthorRepository $repo, $id, ManagerRegistry $manager): Response
-    {
-        $em = $manager->getManager();
 
-        // Find the author by ID
-        $author = $repo->find($id);
+    #[Route('/update/{id}', name: 'author_update')]
+    public function updateAuthor(Request $req , ManagerRegistry $manager , $id , AuthorRepository $repo):Response 
+{
+    $em = $manager->getManager();
+    $author = $repo->find($id);
+    $form = $this->createForm(AuthorType::class , $author);
+    $form->handleRequest($req);
 
-        // Check if the author exists
-        if (!$author) {
-            // Handle the case where the author is not found, e.g., redirect to a 404 page
-            throw $this->createNotFoundException('Author not found');
-        }
-
-        // Handle the form submission
-        if ($request->isMethod('POST')) {
-            // Retrieve form data
-            $username = $request->request->get('username');
-            $email = $request->request->get('email');
-
-            // Update author properties
-            $author->setUsername($username);
-            $author->setEmail($email);
-
-            // Persist changes to the database
-            $em->flush();
-
-            // Redirect to a route after successful update
-            return $this->redirectToRoute('app_listDB');
-        }
-
-        // Render the form template with the existing author's data
-        return $this->render('author/update.html.twig', [
-            'author' => $author,
-        ]);
+   
+    if($form->isSubmitted()){
+    $em->persist($author);
+    $em->flush();
+    return $this-> redirectToRoute('app_listDB');
     }
+    return $this->renderForm('author/update.html.twig',
+    [
+        'f' => $form
+    ]
+);
+}
+
 
 }
