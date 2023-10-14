@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\AuthorRepository;
 use App\Entity\Author;
+use App\Entity\Book;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,7 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\AuthorType;
-
+use Symfony\Component\Security\Core\User\User;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AuthorController extends AbstractController
 { 
@@ -68,11 +70,22 @@ class AuthorController extends AbstractController
     }
 
     #[Route('/getOne/{id}', name: 'app_getOne')]
-    public function getAuthor(AuthorRepository $repo , $id) : Response{
+    public function getAuthor(AuthorRepository $repo, $id): Response
+    {
         $author = $repo->find($id);
-        return $this->render('author/details.html.twig',[
-          'author'=>$author
+        
+    
+        if (!$author) {
+            throw new NotFoundHttpException('author not found.');
+        }
+
+        $authorsWithBooks = $repo->findBooksByAuthorWithJoin($author);
+        return $this->render('author/details.html.twig', [
+            'author' => $author,
+            'authorsWithBooks' => $authorsWithBooks,
         ]);
+
+        
     }
 
     
@@ -107,7 +120,7 @@ class AuthorController extends AbstractController
     public function updateAuther(AuthorRepository $repo , $id) : Response{
         $author = $repo->find($id);
         return $this->render('author/update.html.twig',[
-          'author'=>$author
+          'author'=>$author,
         ]);
     }
 
@@ -133,14 +146,59 @@ class AuthorController extends AbstractController
 );
 }
 
-#[Route('/addBookToAuthor/{id}' , name : 'addBookToAuthor')]
-public function addBookToAuthorAction(Request $req , $id , ManagerRegistry $manager):Response
+#[Route('/addBookToAuthor/{id}', name: 'addBookToAuthor')]
+public function addBookToAuthorAction(Request $req, $id, ManagerRegistry $manager, AuthorRepository $repo): Response
 {
-return $this->render('book/addBook.html.twig',[
-'id'=>$id 
-]); 
+    $em = $manager->getManager();
+    $author = $repo->find($id);
+    
 
+    $ref = $req->get('ref');
+    $title = $req->get('title');
+    $date = $req->get('publication_date');
+    $publicationDate = new \DateTime($date);
+    $published = $req->get('published');
+    $category = $req->get('category');
+
+    $book = new Book();
+    $book->setRef($ref); 
+    $book->setTitle($title);
+    $book->setPublicationDate($publicationDate);
+    $book->setPublished($published === 'on');
+    $book->setCategory($category);
+    $book->setAuthor($author);
+ 
+    if(!empty($ref)){
+        $em->persist($book);
+        $em->flush();
+    }
+  
+
+        return $this-> redirectToRoute('app_listDB');
+        
+        
 }
+
+
+
+// public function showBooksByAuthorAction($id, AuthorRepository $authorRepository)
+// {
+//     $author = $authorRepository->find($id);
+
+//     if (!$author) {
+//         throw $this->createNotFoundException('Author not found');
+//     }
+
+//     $books = $authorRepository->findBooksByAuthor($author);
+    
+//     return $this->render('author/details.html.twig', [
+//         'author' => $author,
+//         'books' => $books, 
+        
+//     ]);
+// }
+
+
 
 
 }

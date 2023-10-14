@@ -45,4 +45,18 @@ class AuthorRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+
+public function findBooksByAuthorWithJoin(Author $author): array
+{
+    return $this->createQueryBuilder('a')
+        ->select('a', 'b') // Select both author and books
+        ->leftJoin('a.books', 'b')
+        ->where('a.id = :id')
+        ->setParameter('id', $author->getId())
+        ->getQuery()
+        ->getResult();
+}
+
+
 }

@@ -33,11 +33,10 @@ class Book
         return $this->ref;
     }
 
-    public function setRef($ref)
+    public function setRef($ref): static
     {
         $this->ref = $ref;
-
-        return $ref;
+        return $this;
     }
 
 
