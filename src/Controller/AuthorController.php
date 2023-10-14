@@ -120,7 +120,6 @@ class AuthorController extends AbstractController
     $author = $repo->find($id);
     $form = $this->createForm(AuthorType::class , $author);
     $form->handleRequest($req);
-
    
     if($form->isSubmitted()){
     $em->persist($author);
@@ -132,6 +131,15 @@ class AuthorController extends AbstractController
         'f' => $form
     ]
 );
+}
+
+#[Route('/addBookToAuthor/{id}' , name : 'addBookToAuthor')]
+public function addBookToAuthorAction(Request $req , $id , ManagerRegistry $manager):Response
+{
+return $this->render('book/addBook.html.twig',[
+'id'=>$id 
+]); 
+
 }
 
 
